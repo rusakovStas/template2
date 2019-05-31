@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script{
                     try {
-                            sh "createdb var_db"
+                            sh "createdb templa"
                         }
                          catch (exc) {
                             echo 'is already exist'
@@ -25,14 +25,14 @@ pipeline {
                         try {
                             sh "cd ${workspace}/client && yarn install"
                             sh "cd ${workspace}/client && yarn run build-test"
-                            sh "curl 'http://localhost:var_test_port/actuator/shutdown' -i -X POST"
+                            sh "curl 'http://localhost:3334/actuator/shutdown' -i -X POST"
                         }
                          catch (exc) {
                             echo 'Something failed!'
                             currentBuild.result = "SUCCESS"
                         }
                 }
-                sh "cd server && ./gradlew copyFrontBuildToPublic integrationTest -Dselenide.baseUrl=http://var_host -Dselenide.browser=integration.SelenoidWebDriverProvider"
+                sh "cd server && ./gradlew copyFrontBuildToPublic integrationTest -Dselenide.baseUrl=http://138.68.95.208 -Dselenide.browser=integration.SelenoidWebDriverProvider"
             }
         post {
             always {
@@ -49,14 +49,14 @@ pipeline {
         stage('Build Front') {
             steps {
                 sh "cd ${workspace}/client && yarn build"
-                sh "cd ${workspace}/client && JENKINS_NODE_COOKIE=dontKillMe pm2 delete -s app-var_front_port || : && pm2 serve build var_front_port --name=app-var_front_port --spa"
+                sh "cd ${workspace}/client && JENKINS_NODE_COOKIE=dontKillMe pm2 delete -s app-9999 || : && pm2 serve build 9999 --name=app-9999 --spa"
             }
         }
         stage('Deploy') {
             steps {
             script{
                         try {
-                            sh "curl 'http://localhost:var_port/actuator/shutdown' -i -X POST"
+                            sh "curl 'http://localhost:1111/actuator/shutdown' -i -X POST"
                         }
                          catch (exc) {
                             echo 'Something failed!'
